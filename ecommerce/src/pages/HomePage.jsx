@@ -12,16 +12,16 @@ export function HomePage() {
             return (
               <div key={id} className="product-container">
                 <div className="product-image-container">
-                  <img
-                    className="product-image"
-                    src="images/products/athletic-cotton-socks-6-pairs.jpg"
-                  />
+                  <img className="product-image" src={image} />
                 </div>
 
                 <div className="product-name limit-text-to-2-lines">{name}</div>
 
                 <div className="product-rating-container">
-                  <img className="product-rating-stars" src={image} />
+                  <img
+                    className="product-rating-stars"
+                    src="images/ratings/rating-45.png"
+                  />
                   <div className="product-rating-count link-primary">
                     {rating.stars} * 10
                   </div>
