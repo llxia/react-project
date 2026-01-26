@@ -1,72 +1,81 @@
 import { Header } from "../components/Header";
 import "./HomePage.css";
-import { products } from "../data/products";
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export function HomePage() {
+  const [products, setProducts] = useState();
+  const [cart, setCart] = useState();
   useEffect(() => {
     axios.get("http://localhost:3000/api/products").then((response) => {
+      setProducts(response.data);
+    });
+
+    axios.get("http://localhost:3000/api/cart-items").then((response) => {
+      setCart(response.data);
       console.log(response.data);
     });
   }, []);
 
   return (
     <>
-      <Header />
+      <Header cart={cart} />
       <div className="home-page">
         <div className="products-grid">
-          {products.map(({ id, name, image, rating, priceCents }) => {
-            return (
-              <div key={id} className="product-container">
-                <div className="product-image-container">
-                  <img className="product-image" src={image} />
-                </div>
-
-                <div className="product-name limit-text-to-2-lines">{name}</div>
-
-                <div className="product-rating-container">
-                  <img
-                    className="product-rating-stars"
-                    src="images/ratings/rating-45.png"
-                  />
-                  <div className="product-rating-count link-primary">
-                    {rating.stars} * 10
+          {products &&
+            products.map(({ id, name, image, rating, priceCents }) => {
+              return (
+                <div key={id} className="product-container">
+                  <div className="product-image-container">
+                    <img className="product-image" src={image} />
                   </div>
+
+                  <div className="product-name limit-text-to-2-lines">
+                    {name}
+                  </div>
+
+                  <div className="product-rating-container">
+                    <img
+                      className="product-rating-stars"
+                      src="images/ratings/rating-45.png"
+                    />
+                    <div className="product-rating-count link-primary">
+                      {rating.stars} * 10
+                    </div>
+                  </div>
+
+                  <div className="product-price">
+                    ${(priceCents / 100).toFixed(2)}
+                  </div>
+
+                  <div className="product-quantity-container">
+                    <select>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="6">6</option>
+                      <option value="7">7</option>
+                      <option value="8">8</option>
+                      <option value="9">9</option>
+                      <option value="10">10</option>
+                    </select>
+                  </div>
+
+                  <div className="product-spacer"></div>
+
+                  <div className="added-to-cart">
+                    <img src="images/icons/checkmark.png" />
+                    Added
+                  </div>
+
+                  <button className="add-to-cart-button button-primary">
+                    Add to Cart
+                  </button>
                 </div>
-
-                <div className="product-price">
-                  ${(priceCents / 100).toFixed(2)}
-                </div>
-
-                <div className="product-quantity-container">
-                  <select>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                  </select>
-                </div>
-
-                <div className="product-spacer"></div>
-
-                <div className="added-to-cart">
-                  <img src="images/icons/checkmark.png" />
-                  Added
-                </div>
-
-                <button className="add-to-cart-button button-primary">
-                  Add to Cart
-                </button>
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
       </div>
     </>
