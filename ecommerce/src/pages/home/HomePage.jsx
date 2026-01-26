@@ -8,9 +8,11 @@ export function HomePage({ cart }) {
   const [products, setProducts] = useState();
 
   useEffect(() => {
-    axios.get("/api/products").then((response) => {
-      setProducts(response.data);
-    });
+    const getProducts = async () => {
+      const res = await axios.get("/api/products");
+      setProducts(res.data);
+    };
+    getProducts();
   }, []);
 
   return (
