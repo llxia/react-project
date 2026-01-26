@@ -1,8 +1,16 @@
 import { Header } from "../components/Header";
 import "./HomePage.css";
 import { products } from "../data/products";
+import axios from "axios";
+import { useEffect } from "react";
 
 export function HomePage() {
+  useEffect(() => {
+    axios.get("http://localhost:3000/api/products").then((response) => {
+      console.log(response.data);
+    });
+  }, []);
+
   return (
     <>
       <Header />
