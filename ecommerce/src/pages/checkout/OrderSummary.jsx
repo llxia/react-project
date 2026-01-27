@@ -55,6 +55,7 @@ export function OrderSummary({ cart, deliveryOptions }) {
                           <input
                             type="radio"
                             checked={id === deliveryOptionId}
+                            onChange={() => {}}
                             className="delivery-option-input"
                             name={`delivery-option-${productId}`}
                           />
