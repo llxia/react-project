@@ -4,6 +4,8 @@ import { useState } from "react";
 
 export function Product({ product, loadCart }) {
   const { id, name, image, rating, priceCents } = product;
+  console.log(product);
+  console.log(image);
   const [quantity, setQuantity] = useState();
   const addToCart = () => {
     async () => {
@@ -17,7 +19,11 @@ export function Product({ product, loadCart }) {
   return (
     <div key={id} className="product-container">
       <div className="product-image-container">
-        <img className="product-image" src={image} />
+        <img
+          className="product-image"
+          data-testid="product-image"
+          src={image}
+        />
       </div>
 
       <div className="product-name limit-text-to-2-lines">{name}</div>

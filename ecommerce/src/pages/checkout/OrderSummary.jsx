@@ -5,6 +5,7 @@ export function OrderSummary({ cart, deliveryOptions }) {
   return (
     <div className="order-summary">
       {deliveryOptions.length > 0 &&
+        cart &&
         cart.map(({ productId, name, product, quantity, deliveryOptionId }) => {
           const selectedDeliveryOption = deliveryOptions.find((dops) => {
             return dops.id === deliveryOptionId;
