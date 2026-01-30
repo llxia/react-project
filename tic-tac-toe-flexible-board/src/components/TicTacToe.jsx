@@ -14,26 +14,12 @@ gameOverSound.volume = 0.2;
 const clickSound = new Audio(clickSoundAsset);
 clickSound.volume = 0.5;
 
-const winningCombos = [
-  //rows:
-  { combo: [0, 1, 2], strikeClass: "strike-row-1" },
-  { combo: [3, 4, 5], strikeClass: "strike-row-2" },
-  { combo: [6, 7, 8], strikeClass: "strike-row-3" },
-  // columns
-  { combo: [0, 3, 6], strikeClass: "strike-column-1" },
-  { combo: [1, 4, 7], strikeClass: "strike-column-2" },
-  { combo: [2, 5, 8], strikeClass: "strike-column-3" },
-  // diagonals:
-  { combo: [0, 4, 8], strikeClass: "strike-diagonal-1" },
-  { combo: [2, 4, 6], strikeClass: "strike-diagonal-2" },
-];
-
 export function TicTacToe() {
-  const [tiles, setTiles] = useState(Array(9).fill(null));
+  const [boardSize, setBoardSize] = useState(6);
+  const [tiles, setTiles] = useState(Array(boardSize * boardSize).fill(null));
   const [playerTurn, setPlayerTurn] = useState(PLAYER_X);
   const [strikeClass, setStrikeClass] = useState();
   const [gameState, setGameState] = useState(GS.inProgress);
-  const [boardSize, setBoardSize] = useState(3);
 
   const handleTileClick = (index) => {
     if (gameState !== GS.inProgress) {
@@ -51,36 +37,79 @@ export function TicTacToe() {
     }
   };
   const handleReset = () => {
-    setTiles(Array(9).fill(null));
+    reset(boardSize);
+  };
+
+  const reset = (size) => {
+    setTiles(Array(size * size).fill(null));
     setPlayerTurn(PLAYER_X);
     setStrikeClass("");
     setGameState(GS.inProgress);
   };
-  const checkWinner = (tiles, setStrikeClass, setGameState) => {
-    for (const { combo, strikeClass } of winningCombos) {
-      const tileValue1 = tiles[combo[0]];
-      const tileValue2 = tiles[combo[1]];
-      const tileValue3 = tiles[combo[2]];
-      if (
-        tileValue1 !== null &&
-        tileValue1 === tileValue2 &&
-        tileValue2 === tileValue3
-      ) {
-        setStrikeClass(strikeClass);
 
-        if (tileValue1 === PLAYER_X) {
-          setGameState(GS.playXWins);
-        } else {
-          setGameState(GS.playOWins);
+  const row = (n) => Math.floor(n / boardSize);
+  const col = (n) => n % boardSize;
+
+  function hasFive(board) {
+    const directions = [
+      [0, 1], // →
+      [1, 0], // ↓
+      [1, 1], // ↘
+      [1, -1], // ↙
+    ];
+
+    for (let i = 0; i < board.length; i++) {
+      const player = board[i];
+      if (!player) continue;
+
+      const r = row(i);
+      const c = col(i);
+
+      for (const [dr, dc] of directions) {
+        let count = 1;
+
+        for (let step = 1; step < 5; step++) {
+          const nr = r + dr * step;
+          const nc = c + dc * step;
+
+          if (nr < 0 || nr >= boardSize || nc < 0 || nc >= boardSize) break;
+
+          const next = nr * boardSize + nc;
+          if (board[next] !== player) break;
+
+          count++;
         }
-        return;
+
+        if (count === 5) {
+          return player; // "X" or "O"
+        }
       }
+    }
+
+    return null; // no winner
+  }
+
+  const checkWinner = (tiles, setStrikeClass, setGameState) => {
+    console.log("tiles", tiles);
+    const result = hasFive(tiles);
+    console.log("result", result);
+    if (result === PLAYER_X) {
+      setGameState(GS.playXWins);
+    } else if (result === PLAYER_O) {
+      setGameState(GS.playOWins);
+    } else {
+      return;
     }
 
     const areAllTilesFilledIn = tiles.every((tile) => tile !== null);
     if (areAllTilesFilledIn) {
       setGameState(GS.draw);
     }
+  };
+
+  const handleBoardSize = (e) => {
+    setBoardSize(e.target.value);
+    reset(e.target.value);
   };
 
   useEffect(() => {
@@ -102,12 +131,20 @@ export function TicTacToe() {
   return (
     <>
       <h1>Tic Tac Toe</h1>
+      <input
+        type="number"
+        min={5}
+        max={14}
+        placeholder="Size of the bord"
+        value={boardSize}
+        onChange={handleBoardSize}
+      />
       <Board
         tiles={tiles}
         onTileClick={handleTileClick}
         playerTurn={playerTurn}
         strikeClass={strikeClass}
-        boardSize={boardSize}
+        boardSize={boardSize || 5}
       />
       <GameOver gameState={gameState} />
       <Reset gameState={gameState} onClick={handleReset} />
